@@ -34,14 +34,18 @@ class University:
     # node list 
     # edge dict
     # int/float number max_distances 
-    def __init__(self, ):
-        return
-    
+    def __init__(self):
+        self.nodes = [] ; self.edges = {}
+
     def __str__(self):
         pass
 
     def add_node(self, node):
-        pass
+
+        if isinstance(node, Classroom):
+            self.nodes.append(node)
+        else:
+            print("Invalid classroom. Please provide a Classroom object.")
 
     def add_edge(self, node1, node2):
         pass
@@ -51,5 +55,6 @@ class University:
 
     
 
-
+Aueb = University()
+Aueb.add_node(node=A21)
 
