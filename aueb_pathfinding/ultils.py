@@ -1,34 +1,25 @@
-
-
-
-def clean_values():
-    return
-
-
-def load_map():
-    return
-
-
-
 import re
-
 special_symbols = r"[@#!$\*]"
 
+def clean_values(value, special_symbols = r"[@#!$\*]"):
+    
+    clean_value = re.sub(special_symbols, "", value)
 
-with open("aueb_map.txt", "r") as file:
-    for row in file:
-        found = re.findall(special_symbols, row)
-        if found:
-            print(row, "->", found)
+    try:
+        return int(clean_value)
+    except ValueError:
+        return clean_value
 
+txt_file = "aueb_map.txt"
+def load_map(txt_file = "aueb_map.txt"):
 
-with open("aueb_map.txt", "r") as file:
-    aueb_map = file.read()
+    aueb_map = []
 
-print(aueb_map)
-grid = aueb_map.splitlines()
+    with open(txt_file, "r") as file:
+        for row in file:
+            parts = row.strip().split(";")
+            clean_row = [clean_values(value) for value in parts]
+            aueb_map.append(clean_row)
 
+    return aueb_map
 
-
-# I have to search what kind of object is the aueb_map 
-# and explore the re library
