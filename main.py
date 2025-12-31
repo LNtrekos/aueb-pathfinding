@@ -18,20 +18,16 @@ Aueb = University()
 for name, x, y, floor in zip(aueb_map["classroom"],aueb_map["x"],aueb_map["y"],aueb_map["floor"]):
     Aueb.add_node(Classroom(name=name, x=x, y=y, floor=floor))
 
+for src in Aueb.nodes:
+    for dest in Aueb.nodes:
+        Aueb.add_edge(src, dest)
 
-i = 0
-name = aueb_map["classroom"][i]; x = aueb_map["x"][i]; y = aueb_map["y"][i]; floor = aueb_map["floor"][i]
-node1 = Classroom(name=name, x=x, y=y, floor=floor)
-print(node1)
 
-i = 5
-name = aueb_map["classroom"][i]; x = aueb_map["x"][i]; y = aueb_map["y"][i]; floor = aueb_map["floor"][i]
-node2 = Classroom(name=name, x=x, y=y, floor=floor)
-print(node2)
+import networkx as nx
+Aueb_Graph = nx.Graph()
+for node in Aueb.nodes:
+    Aueb_Graph.add_node(node.name, pos = [node.x, node.y])
+print(Aueb_Graph)
 
-distance(node1=node1, node2=node2)
-
-Aueb.add_edge(node1, node2)
-
-print(Aueb)
-
+Aueb.edges["A21"]
+Aueb.edges["A22"]

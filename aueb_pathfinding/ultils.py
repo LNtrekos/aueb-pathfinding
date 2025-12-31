@@ -51,11 +51,11 @@ def distance(node1, node2, floor_weight=1.0):
         floor_penalty = floor_weight  * angle
 
         if node2.floor > node1.floor: # Going Up
-            print("Going Up")
+            print(f"Going Up ({node1.name} -> {node2.name})")
         else:                         # Going Down
-            print("Going Down")
+            print(f"Going Down ({node1.name} -> {node2.name})")
     else:
-        print("Same floor")           # Same Floor   
+        print(f"Same floor ({node1.name} -> {node2.name})")   # Same Floor   
 
     return euclidean_distance + floor_penalty
 

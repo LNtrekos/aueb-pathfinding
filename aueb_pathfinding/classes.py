@@ -71,7 +71,9 @@ class University:
         #current_edges = 
         return (
             "Aueb Classrooms are:\n"
-            + ", ".join(available_classrooms)
+            f"{available_classrooms}\n"
+            "Available links:\n"
+
         )
         
     def add_node(self, node):
@@ -82,16 +84,22 @@ class University:
             print("Invalid classroom. Please provide a Classroom object.")
 
     def add_edge(self, node1, node2):
+
+        if node1 == node2:
+            print("Node 1 and Node 2 are the same")
+            return
+
         dist = distance(node1, node2)
 
         if dist > self.max_distance:
             print(f"{node1.name} is too far from {node2.name}")
             return
 
-        if node1 not in self.edges:
-            self.edges[node1] = {}
-        
-        self.edges[node1][node2] = dist
+        if node1.name not in self.edges:
+            self.edges[node1.name] = {}
+
+        self.edges[node1.name][node2.name] = round(dist, 2)
+
 
     def get_neighbors(self, node):
         pass
