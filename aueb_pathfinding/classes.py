@@ -1,4 +1,10 @@
-from aueb_pathfinding.ultils import distance
+"""
+This file contains the classes we used: 
+Classroom, University
+"""
+
+from aueb_pathfinding.ultils import distance, clean_values # inside distance 
+
 
 class Classroom:
 
@@ -37,9 +43,8 @@ class Classroom:
         
     def __str__(self):
         return self.name
-    
 
-    
+
 class University: 
 
     def __init__(self, nodes=None, edges=None, max_distance=21.0):
@@ -67,14 +72,24 @@ class University:
         self.max_distance = float(max_distance)
         
     def __str__(self):
-        available_classrooms = [node.name for node in self.nodes]
-        #current_edges = 
-        return (
-            "Aueb Classrooms are:\n"
-            f"{available_classrooms}\n"
-            "Available links:\n"
+        # Classrooms
+        classrooms = ", ".join(node.name for node in self.nodes)
 
+        # Links / roads
+        links = []
+        for src, targets in self.edges.items():
+            for dst, dist in targets.items():
+                links.append(f"{src} -> {dst} (dist={dist})")
+
+        links_str = "\n".join(links) if links else "No links available"
+
+        return (
+            "\nAUEB Classrooms:\n"
+            f"{classrooms}\n\n"
+            "Available links:\n"
+            f"{links_str}"
         )
+
         
     def add_node(self, node):
 
@@ -102,6 +117,11 @@ class University:
 
 
     def get_neighbors(self, node):
-        pass
+        
+        neighbors = []
+        for node_name in self.edges[node.name]:
+            neighbors.append(node_name)
+
+        return neighbors
 
 
