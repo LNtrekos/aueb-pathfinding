@@ -1,3 +1,7 @@
+""" 
+This fie contains the helper functions needed to work the navigation system
+"""
+
 import re
 import math 
 
