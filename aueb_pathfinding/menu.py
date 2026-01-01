@@ -1,3 +1,7 @@
+"""
+This file contains the menu part of the navigation system
+"""
+
 def menu():
     """
     Display the main menu and return the user's selection.
@@ -13,4 +17,5 @@ def menu():
 4) Visualize Map
 5) Exit
 """)
+
 
