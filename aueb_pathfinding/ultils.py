@@ -6,22 +6,16 @@ def clean_values(value, special_symbols = r"[@#!$\*]"):
     
     clean_value = re.sub(special_symbols, "", value)
 
+    # Try converting to integer
     try:
         return int(clean_value)
+    # if fails means the column is Classroom Name:
     except ValueError:
+        # so it is character
         return clean_value
 
 #txt_file = "aueb_map.txt"
 def load_map(txt_file = "aueb_map.txt"):
-
-    def clean_values(value, special_symbols = r"[@#!$\*]"):
-    
-        clean_value = re.sub(special_symbols, "", value)
-
-        try:
-            return int(clean_value)
-        except ValueError:
-            return clean_value
 
     aueb_map = {
         "classroom": [], "x": [], "y": [], "floor": []
@@ -29,12 +23,12 @@ def load_map(txt_file = "aueb_map.txt"):
 
     with open(txt_file, "r") as file:
         for row in file:
-            parts = [clean_values(v) for v in row.strip().split(";")]
+            parts = [clean_values(value) for value in row.strip().split(";")]
 
-            aueb_map["classroom"].append(parts[0])
-            aueb_map["x"].append(parts[1])
-            aueb_map["y"].append(parts[2])
-            aueb_map["floor"].append(parts[3])
+            aueb_map["classroom"].append(parts[0]) # Classroom Name
+            aueb_map["x"].append(parts[1])         # X
+            aueb_map["y"].append(parts[2])         # Y 
+            aueb_map["floor"].append(parts[3])     # Floor
     
     return aueb_map
 
