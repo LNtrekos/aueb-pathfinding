@@ -41,8 +41,9 @@ def distance(node1, node2, floor_weight=1.0):
     floor_penalty = 0.0
 
     if node1.floor != node2.floor:
-        angle = math.atan2(dy, dx)    # tilt
-        floor_penalty = floor_weight  * angle
+
+        floor_diff = (node1.floor - node2.floor)**2
+        floor_penalty = floor_weight  * floor_diff
 
         if node2.floor > node1.floor: # Going Up
             print(f"Going Up ({node1.name} -> {node2.name})")
