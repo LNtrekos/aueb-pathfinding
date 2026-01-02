@@ -12,6 +12,7 @@ def clean_values(value, special_symbols=r"[@#!$\*]"):
 
     try:
         return int(clean_value)
+    # if that fails it has to be integer (Classroom Name) given the columns we currently have
     except ValueError:
         return clean_value
 
@@ -20,10 +21,13 @@ def load_map(txt_file="aueb_map.txt"):
     # Load classroom coordinates and floor info from text file
     aueb_map = {"classroom": [], "x": [], "y": [], "floor": []}
 
+    # Open the txt file
     with open(txt_file, "r") as file:
         for row in file:
+            # Seprate each value by ; and clean and turn to int/str
             parts = [clean_values(v) for v in row.strip().split(";")]
 
+            # Assign each value to the corresponding category 
             aueb_map["classroom"].append(parts[0])
             aueb_map["x"].append(parts[1])
             aueb_map["y"].append(parts[2])
@@ -32,37 +36,38 @@ def load_map(txt_file="aueb_map.txt"):
     return aueb_map
 
 
-def distance(node1, node2, floor_weight=1.0):
-    # Euclidean distance + symmetric floor-change penalty (undirected)
+def distance(node1, node2, floor_weight=1.5, digits = 0):
+    
+    # Euclidean distance 
     dx = node2.x - node1.x
     dy = node2.y - node1.y
 
+    # Used the math method to calculate the distance
     euclidean_distance = math.hypot(dx, dy)
+    # Initial floor penalty
     floor_penalty = 0.0
 
+    # Apply penalty if floors differ
     if node1.floor != node2.floor:
+        # Same to the logic of MSE, the greatest the difference the greatest the penalty
         floor_diff = (node1.floor - node2.floor) ** 2
+        # with some floor weight for adjusting
         floor_penalty = floor_weight * floor_diff
-
-    return euclidean_distance + floor_penalty
-
-
-def create_Graph_instance():
-    return nx.Graph()
-
-
-def add_nx_nodes(uni, uni_nx):
     
-    for node in uni.nodes:
-        uni_nx.add_node(node.name, pos = [node.x, node.y])
+    # Return round value
+    return round(euclidean_distance + floor_penalty, digits)
+
 
 def visualize_graph(classrooms, max_distance = 21.0):
 
+    # Initialise nx object
     uniGraph = nx.Graph()
 
+    # Add each node
     for node in classrooms:
-        uniGraph.add_node(node.name, pos = [node.x, node.y])
+        uniGraph.add_node(node.name, pos=(node.x, node.y))
 
+    # Add the edges without duplicates 
     for i in range(len(classrooms)):
         for j in range(i + 1, len(classrooms)):
 
