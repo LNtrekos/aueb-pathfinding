@@ -3,8 +3,7 @@ This file contains the classes we used:
 Classroom, University
 """
 
-from aueb_pathfinding.ultils import distance, clean_values # inside distance 
-
+from aueb_pathfinding.ultils import distance # inside distance 
 
 class Classroom:
 
@@ -43,7 +42,6 @@ class Classroom:
         
     def __str__(self):
         return self.name
-
 
 class University: 
 
