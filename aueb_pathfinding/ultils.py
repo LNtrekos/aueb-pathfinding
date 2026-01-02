@@ -5,6 +5,8 @@ Helper functions for the indoor navigation system.
 import re
 import math
 import networkx as nx
+import matplotlib.pyplot as plt
+
 
 def clean_values(value, special_symbols=r"[@#!$\*]"):
     # Remove special symbols and try to convert to int
@@ -76,8 +78,34 @@ def visualize_graph(classrooms, max_distance = 21.0):
             if dist <= max_distance:
                 uniGraph.add_edge(u.name, v.name, weight=dist)
 
-    
-    return uniGraph
+    pos = nx.get_node_attributes(uniGraph, 'pos')
+
+    # Find the min and max x and y values to set the axis limits
+    x_vals = [coord[0] for coord in pos.values()]
+    y_vals = [coord[1] for coord in pos.values()]
+
+    # Set the axis limits based on the min and max values of the coordinates
+    x_min, x_max = min(x_vals) - 10, max(x_vals) + 10  # Add some padding
+    y_min, y_max = min(y_vals) - 10, max(y_vals) + 10  # Add some padding
+
+    # Create a plot to visualize the graph
+    fig = plt.figure(figsize=(10, 10))
+
+    # Draw the graph with the adjusted position layout
+    nx.draw(uniGraph, pos, with_labels=True, node_size=1500, node_color='lightblue', font_size=12, font_weight='bold', edge_color='gray')
+
+    # Optionally, display edge weights (Euclidean distances) on the graph
+    edge_labels = nx.get_edge_attributes(uniGraph, 'weight')
+    nx.draw_networkx_edge_labels(uniGraph, pos=pos, edge_labels=edge_labels)
+
+    # Adjust the axis to fit the nodes nicely
+    plt.xlim(x_min, x_max)
+    plt.ylim(y_min, y_max)
+
+    # Add title and show the plot
+    plt.title("Aueb Classrooms Graph")
+
+    return fig
 
 
 
