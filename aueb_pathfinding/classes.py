@@ -3,10 +3,11 @@ This file contains the classes we used:
 Classroom, University
 """
 
-from aueb_pathfinding.ultils import distance # inside distance 
+from aueb_pathfinding.ultils import distance # inside University (for edges) 
 
 class Classroom:
 
+    # Initialization
     def __init__(self, name, x, y, floor):
 
         # Basic validation
@@ -25,6 +26,15 @@ class Classroom:
         self.y = y
         self.floor = floor
 
+    # Print method
+    def __str__(self):
+        return self.name
+    
+    # Represent method (for developers)
+    def __repr__(self):
+        return f"Classroom(name={self.name!r}, floor={self.floor})"
+
+    # Equallity 
     def __eq__(self, other):
         """ eq and hash a bit extra for this project
         But It was something disccussed in class and 
@@ -32,21 +42,19 @@ class Classroom:
 
         if not isinstance(other, Classroom):
             print("Argument is not a Classroom object")
-        return (
-            self.name == other.name
-            and self.floor == other.floor
-        )
+        return self.name == other.name
 
+    # Hash items
     def __hash__(self):
         return hash((self.name, self.floor))
         
-    def __str__(self):
-        return self.name
 
 class University: 
 
+    # Initialization
     def __init__(self, nodes=None, edges=None, max_distance=21.0):
 
+        # Basic validation
         if nodes is None:
             nodes = []
         if edges is None:
@@ -65,19 +73,66 @@ class University:
             if not isinstance(n, Classroom):
                 raise TypeError("All nodes must be Classroom objects")
 
+        # Assign attributes
         self.nodes = list(nodes)
         self.edges = dict(edges)
         self.max_distance = float(max_distance)
         
+    # Nodes
+    def add_node(self, node):
+
+        # Basic validation
+        if isinstance(node, Classroom):
+            self.nodes.append(node)
+        else:
+            print("Invalid classroom. Please provide a Classroom object.")
+
+    # Edges
+    def add_edge(self, node1, node2):
+        
+        # Check if nodes are the same (eq from classroom object)
+        if node1 == node2:
+            print("Node 1 and Node 2 are the same")
+            return
+
+        # calsulate the distance between the nodes 
+        dist = distance(node1, node2)
+
+        # Distance has to be valid 
+        if dist > self.max_distance:
+            print(f"{node1.name} is too far from {node2.name}")
+            return
+
+        # Initialise place in dictionary to store each node
+        if node1.name not in self.edges:
+            self.edges[node1.name] = {}
+        
+        if node2.name not in self.edges:
+            self.edges[node2.name] = {}
+
+        # Add both "directions" (A21 -> A22, A22 -> A21), though the graph is undirected
+        self.edges[node1.name][node2.name] = round(dist, 2)
+        self.edges[node2.name][node1.name] = round(dist, 2)
+
+    # Neighbors
+    def get_neighbors(self, node):
+        
+        neighbors = []
+        for node_name in self.edges[node.name]:
+            neighbors.append(node_name)
+
+        return neighbors
+    
+    # String represent
     def __str__(self):
-        # Classrooms
+        # Nice way to display Classrooms
         classrooms = ", ".join(node.name for node in self.nodes)
 
-        # Links / roads
+        # Nice way to display all links / roads (both ways)
         links = []
         for src, targets in self.edges.items():
-            for dst, dist in targets.items():
-                links.append(f"{src} -> {dst} (dist={dist})")
+            for dest, dist in targets.items():
+                links.append(f"{src} -> {dest} (dist={dist})")
 
         links_str = "\n".join(links) if links else "No links available"
 
@@ -89,37 +144,5 @@ class University:
         )
 
         
-    def add_node(self, node):
-
-        if isinstance(node, Classroom):
-            self.nodes.append(node)
-        else:
-            print("Invalid classroom. Please provide a Classroom object.")
-
-    def add_edge(self, node1, node2):
-
-        if node1 == node2:
-            print("Node 1 and Node 2 are the same")
-            return
-
-        dist = distance(node1, node2)
-
-        if dist > self.max_distance:
-            print(f"{node1.name} is too far from {node2.name}")
-            return
-
-        if node1.name not in self.edges:
-            self.edges[node1.name] = {}
-
-        self.edges[node1.name][node2.name] = round(dist, 2)
-
-
-    def get_neighbors(self, node):
-        
-        neighbors = []
-        for node_name in self.edges[node.name]:
-            neighbors.append(node_name)
-
-        return neighbors
 
 
