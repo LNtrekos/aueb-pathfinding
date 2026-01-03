@@ -38,7 +38,7 @@ def load_map(txt_file="aueb_map.txt"):
     return aueb_map
 
 
-def distance(node1, node2, floor_weight=1.5, digits = 0):
+def distance(node1, node2, floor_weight=1.5):
     
     # Euclidean distance 
     dx = node2.x - node1.x
@@ -56,8 +56,7 @@ def distance(node1, node2, floor_weight=1.5, digits = 0):
         # with some floor weight for adjusting
         floor_penalty = floor_weight * floor_diff
     
-    # Return round value
-    return round(euclidean_distance + floor_penalty, digits)
+    return euclidean_distance + floor_penalty
 
 
 def visualize_graph(classrooms, max_distance = 21.0):
@@ -76,7 +75,7 @@ def visualize_graph(classrooms, max_distance = 21.0):
             u, v = classrooms[i], classrooms[j]
             dist = distance(u, v)
             if dist <= max_distance:
-                uniGraph.add_edge(u.name, v.name, weight=dist)
+                uniGraph.add_edge(u.name, v.name, weight=round(dist))
 
     pos = nx.get_node_attributes(uniGraph, 'pos')
 
@@ -106,6 +105,7 @@ def visualize_graph(classrooms, max_distance = 21.0):
     plt.title("Aueb Classrooms Graph")
 
     return fig
+
 
 
 
