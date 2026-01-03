@@ -107,6 +107,57 @@ def visualize_graph(classrooms, max_distance = 21.0):
     return fig
 
 
+def dijkstra(graph, start, target):
+    #graph = Aueb ; start = Aueb.nodes[0] ; target = Aueb.nodes[7]
+    dist = dict(); previous = dict() ; visited = dict()
+    
+    # Initialization
+    for node in graph.nodes:
+        dist[node] = math.inf
+        previous[node] = None
+        visited[node] = False
+
+    dist[start] = 0
+
+    # Main loop
+    while not all(visited.values()):
+        
+        # u ← unvisited vertex with minimum distance
+        u = min(
+            (node for node in graph.nodes if not visited[node]),
+            key=lambda node: dist[node],
+            default=None
+        )
+
+        if u is None:
+            break
+
+        if dist[u] == math.inf:
+            break
+
+        if u == target:
+            break
+        
+        visited[u] = True
+
+
+        for v in graph.get_neighbors(u):
+            if not visited[v]:
+                alt = dist[u] + graph.edges[u][v]
+                if alt < dist[v]:
+                    dist[v] = alt
+                    previous[v] = u
+
+    # Path reconstruction
+    path = []
+    current = target
+    while current is not None:
+        path.insert(0, current)
+        current = previous[current]
+    
+    return path, dist[target]
+
+
 
 
 
