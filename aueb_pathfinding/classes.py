@@ -41,7 +41,7 @@ class Classroom:
         thought of incorporating """
 
         if not isinstance(other, Classroom):
-            print("Argument is not a Classroom object")
+            return False
         return self.name == other.name
 
     # Hash items
@@ -104,23 +104,23 @@ class University:
             return
 
         # Initialise place in dictionary to store each node
-        if node1.name not in self.edges:
-            self.edges[node1.name] = {}
+        if node1 not in self.edges:
+            self.edges[node1] = {}
         
-        if node2.name not in self.edges:
-            self.edges[node2.name] = {}
+        if node2 not in self.edges:
+            self.edges[node2] = {}
 
         # Add both "directions" (A21 -> A22, A22 -> A21), though the graph is undirected
-        self.edges[node1.name][node2.name] = round(dist, 2)
-        self.edges[node2.name][node1.name] = round(dist, 2)
+        self.edges[node1][node2] = round(dist, 2)
+        self.edges[node2][node1] = round(dist, 2)
 
     # Neighbors
     def get_neighbors(self, node):
         
-        neighbors = []
-        for node_name in self.edges[node.name]:
-            neighbors.append(node_name)
-
+        if node not in self.edges:
+            return []
+        
+        neighbors = list(self.edges[node].keys())
         return neighbors
     
     # String represent
