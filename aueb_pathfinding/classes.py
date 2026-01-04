@@ -77,6 +77,7 @@ class University:
         self.nodes = list(nodes)
         self.edges = dict(edges)
         self.max_distance = float(max_distance)
+        self.floor_weight = floor_weight
         
     # Nodes
     def add_node(self, node):
