@@ -19,25 +19,6 @@ def clean_values(value, special_symbols=r"[@#!$\*]"):
         return clean_value
 
 
-def load_map(txt_file="aueb_map.txt"):
-    # Load classroom coordinates and floor info from text file
-    aueb_map = {"classroom": [], "x": [], "y": [], "floor": []}
-
-    # Open the txt file
-    with open(txt_file, "r") as file:
-        for row in file:
-            # Seprate each value by ; and clean and turn to int/str
-            parts = [clean_values(v) for v in row.strip().split(";")]
-
-            # Assign each value to the corresponding category 
-            aueb_map["classroom"].append(parts[0])
-            aueb_map["x"].append(parts[1])
-            aueb_map["y"].append(parts[2])
-            aueb_map["floor"].append(parts[3])
-
-    return aueb_map
-
-
 def distance(node1, node2, floor_weight=1.5):
     
     # Euclidean distance 
@@ -108,7 +89,7 @@ def visualize_graph(classrooms, max_distance = 21.0):
 
 
 def dijkstra(graph, start, target):
-    #graph = Aueb ; start = Aueb.nodes[0] ; target = Aueb.nodes[7]
+    
     dist = dict(); previous = dict() ; visited = dict()
     
     # Initialization
