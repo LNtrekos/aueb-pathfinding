@@ -52,7 +52,7 @@ class Classroom:
 class University: 
 
     # Initialization
-    def __init__(self, nodes=None, edges=None, max_distance=21.0):
+    def __init__(self, nodes=None, edges=None, max_distance=21.0, floor_weight = 1.5):
 
         # Basic validation
         if nodes is None:
@@ -96,7 +96,7 @@ class University:
             return
 
         # calsulate the distance between the nodes 
-        dist = distance(node1, node2)
+        dist = distance(node1, node2, floor_weight=self.floor_weight)
 
         # Distance has to be valid 
         if dist > self.max_distance:
