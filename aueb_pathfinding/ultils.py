@@ -158,6 +158,13 @@ def dijkstra(graph, start, target):
     return path, dist[target]
 
 
+def print_shortest_path(shortest_path, distance):
+
+    path = " -> ".join(str(node) for node in shortest_path)
+    return f"Shortest Path: {path} with overall cost {distance}"
+    
+
+
 
 
 
