@@ -32,7 +32,7 @@ class Classroom:
     
     # Represent method (for developers)
     def __repr__(self):
-        return f"Classroom(name={self.name!r}, floor={self.floor})"
+        return f"Classroom(name={self.name!r}, x={self.x}, y={self.y})"
 
     # Equallity 
     def __eq__(self, other):
@@ -46,7 +46,7 @@ class Classroom:
 
     # Hash items
     def __hash__(self):
-        return hash((self.name, self.floor))
+        return hash((self.name))
         
 
 class University: 

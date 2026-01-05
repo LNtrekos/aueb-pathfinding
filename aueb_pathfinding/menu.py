@@ -4,15 +4,64 @@ This file contains the menu part of the navigation system
 
 from aueb_pathfinding.classes import Classroom, University
 from aueb_pathfinding.ultils import clean_values, distance
+
 import networkx as nx
 import matplotlib.pyplot as plt
+
+# ==============================================================
+#                  Init Check Functions
+# ==============================================================
+
+"""
+Funtions to ensure the smooth user journey, first has to:
+load map -> create graph and then:
+visualize or find shortest path
+"""
+
+def map_init_check(uni_map):
+    """
+    Docstring for map_init_check
+    
+    :param map: str or None
+        Map loaded from the txt file.
+    
+    :Returns: bool
+        True if map is loaded, False otherwise.
+    """
+    if uni_map is None:
+        print(
+            "\nMap is not loaded yet. Please load a map first.\n"
+            "Hint: Go to option 1) Load Map ;)."
+        )
+        return False
+    return True
+
+
+def uni_init_check(uni):
+    """
+    Docstring for uni_init_check
+    
+    :param uni: str or None
+        uni created from University class.
+    
+    :Returns: bool
+        True if uni is created, False otherwise.
+    """
+    if uni is None:
+        print(
+            "\nMap is not loaded yet. Please load a map first.\n"
+            "Hint: Go to option 2) Create Graph ;)."
+        )
+        return False
+    return True
+
+
 
 # ==============================================================
 #                  User Input Functions
 # ==============================================================
 
-def user_choice(input_prompt, check_prompt, error_prompt,
-    lower_limit=-float('inf'), upper_limit=float('inf')):
+def user_choice(input_prompt, check_prompt, error_prompt, lower_limit, upper_limit):
     '''
     Handles integer input from the user with:
     - Type validation
@@ -46,8 +95,7 @@ def user_choice(input_prompt, check_prompt, error_prompt,
             print(error_prompt)
 
 
-def user_input_float(input_prompt, check_prompt, error_prompt,
-                     lower_limit=-float('inf'), upper_limit=float('inf')):
+def user_input_float(input_prompt, check_prompt, error_prompt, lower_limit=-float('inf'), upper_limit=float('inf')):
     '''
     Handles floating-point input with:
     - Type validation
@@ -73,7 +121,7 @@ def user_input_float(input_prompt, check_prompt, error_prompt,
             print(error_prompt)
 
 
-def get_user_node(uni, type_node = ""):
+def get_user_node(uni, type_node):
 
     """
     Allow the user to select starting and target node, 
@@ -108,7 +156,7 @@ def get_user_node(uni, type_node = ""):
 
         # Handle exit
         if user_input == (list_len + 1):
-            print("Returning to main menu.")
+            print("\nReturning to main menu.")
             return
         
         # Convert to index
@@ -116,7 +164,6 @@ def get_user_node(uni, type_node = ""):
         chosen_node = uni.nodes[user_input]
 
         return chosen_node
-
 
 
 
@@ -150,13 +197,20 @@ def menu():
     return user_input
     
 
+
 # ==============================================================
 #                     LOAD Map
 # ==============================================================
 
 def load_map(txt_file="aueb_map.txt"):
+
+    """
+    Docstring for load_map
+    
+    :param txt_file: Description
+    """
     # Load classroom coordinates and floor info from text file
-    aueb_map = {"classroom": [], "x": [], "y": [], "floor": []}
+    uni_map = {"classroom": [], "x": [], "y": [], "floor": []}
 
     # Open the txt file
     with open(txt_file, "r") as file:
@@ -165,12 +219,12 @@ def load_map(txt_file="aueb_map.txt"):
             parts = [clean_values(v) for v in row.strip().split(";")]
 
             # Assign each value to the corresponding category 
-            aueb_map["classroom"].append(parts[0])
-            aueb_map["x"].append(parts[1])
-            aueb_map["y"].append(parts[2])
-            aueb_map["floor"].append(parts[3])
+            uni_map["classroom"].append(parts[0])
+            uni_map["x"].append(parts[1])
+            uni_map["y"].append(parts[2])
+            uni_map["floor"].append(parts[3])
 
-    return aueb_map
+    return uni_map
 
 
 
@@ -178,14 +232,16 @@ def load_map(txt_file="aueb_map.txt"):
 #                     CREATE Graph
 # ==============================================================
 
-def create_graph(txt_map = None):
+def create_graph(uni_map = None):
     """
     Prompt the user for max_distance,
     create a suitable graph, and return it.
     """
-    if txt_map is None:
+    if uni_map is None:
         print("Map is not yet loaded, please load map first.\n")
         return
+    
+    print("\n--- Creating Graph ---\n")
     
     # Maximum Distance input
     user_input_max_distance = user_input_float(
@@ -207,18 +263,22 @@ def create_graph(txt_map = None):
     uni = University(max_distance=user_input_max_distance, floor_weight=user_input_floor_weight)
 
     # Add nodes and edges to the graph (University Object)
-    for name, x, y, floor in zip(txt_map["classroom"],txt_map["x"],txt_map["y"],txt_map["floor"]):
+    for name, x, y, floor in zip(
+        uni_map["classroom"],uni_map["x"],uni_map["y"],uni_map["floor"]
+    ):
         uni.add_node(Classroom(name=name, x=x, y=y, floor=floor))
 
     for i in range(len(uni.nodes)):
         for j in range(i + 1, len(uni.nodes)):
             uni.add_edge(uni.nodes[i], uni.nodes[j])
 
-    print("       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    print("                 AUEB Graph          ")
-    print("       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    print(f"\nAueb Graph with maximum distance {uni.max_distance} and {uni.floor_weight} floor weight created!\n")
+    print("\n      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    print("               University Graph          ")
+    print("        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    print(f"\nUniversity Graph with maximum distance {uni.max_distance} and floor weight equal to {uni.floor_weight} created!\n")
     return uni 
+
+
 
 # ==============================================================
 #                     Vizualize Graph
@@ -270,6 +330,8 @@ def visualize_graph(classrooms, max_distance = 21.0, floor_weight=1.5):
     plt.title("Aueb Classrooms Graph")
 
     return fig
+
+
 
 # ==============================================================
 #                     Shortest Path

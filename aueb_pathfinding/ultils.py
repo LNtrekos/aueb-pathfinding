@@ -51,7 +51,7 @@ def dijkstra(graph, start, target):
     dist[start] = 0
 
     # Main loop
-    while not all(visited.values()):
+    while True:
         
         # u ← unvisited vertex with minimum distance
         u = min(
@@ -60,17 +60,13 @@ def dijkstra(graph, start, target):
             default=None
         )
 
-        if u is None:
-            break
-
-        if dist[u] == math.inf:
+        if u is None or dist[u] == math.inf:
             break
 
         if u == target:
             break
         
         visited[u] = True
-
 
         for v in graph.get_neighbors(u):
             if not visited[v]:
@@ -80,6 +76,10 @@ def dijkstra(graph, start, target):
                     previous[v] = u
 
     # Path reconstruction
+    if dist[target] == math.inf:
+        print(f"{target.name} is unreachable from {start.name} !")
+        return [], math.inf
+    
     path = []
     current = target
     while current is not None:
