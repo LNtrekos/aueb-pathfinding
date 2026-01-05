@@ -4,8 +4,6 @@ Helper functions for the indoor navigation system.
 
 import re
 import math
-import networkx as nx
-import matplotlib.pyplot as plt
 
 
 def clean_values(value, special_symbols=r"[@#!$\*]"):
@@ -38,54 +36,6 @@ def distance(node1, node2, floor_weight=1.5):
         floor_penalty = floor_weight * floor_diff
     
     return euclidean_distance + floor_penalty
-
-
-def visualize_graph(classrooms, max_distance = 21.0):
-
-    # Initialise nx object
-    uniGraph = nx.Graph()
-
-    # Add each node
-    for node in classrooms:
-        uniGraph.add_node(node.name, pos=(node.x, node.y))
-
-    # Add the edges without duplicates 
-    for i in range(len(classrooms)):
-        for j in range(i + 1, len(classrooms)):
-
-            u, v = classrooms[i], classrooms[j]
-            dist = distance(u, v)
-            if dist <= max_distance:
-                uniGraph.add_edge(u.name, v.name, weight=round(dist))
-
-    pos = nx.get_node_attributes(uniGraph, 'pos')
-
-    # Find the min and max x and y values to set the axis limits
-    x_vals = [coord[0] for coord in pos.values()]
-    y_vals = [coord[1] for coord in pos.values()]
-
-    # Set the axis limits based on the min and max values of the coordinates
-    x_min, x_max = min(x_vals) - 10, max(x_vals) + 10  # Add some padding
-    y_min, y_max = min(y_vals) - 10, max(y_vals) + 10  # Add some padding
-
-    # Create a plot to visualize the graph
-    fig = plt.figure(figsize=(10, 10))
-
-    # Draw the graph with the adjusted position layout
-    nx.draw(uniGraph, pos, with_labels=True, node_size=1500, node_color='lightblue', font_size=12, font_weight='bold', edge_color='gray')
-
-    # Optionally, display edge weights (Euclidean distances) on the graph
-    edge_labels = nx.get_edge_attributes(uniGraph, 'weight')
-    nx.draw_networkx_edge_labels(uniGraph, pos=pos, edge_labels=edge_labels)
-
-    # Adjust the axis to fit the nodes nicely
-    plt.xlim(x_min, x_max)
-    plt.ylim(y_min, y_max)
-
-    # Add title and show the plot
-    plt.title("Aueb Classrooms Graph")
-
-    return fig
 
 
 def dijkstra(graph, start, target):
@@ -139,10 +89,6 @@ def dijkstra(graph, start, target):
     return path, dist[target]
 
 
-def print_shortest_path(shortest_path, distance):
-
-    path = " -> ".join(str(node) for node in shortest_path)
-    return f"Shortest Path: {path} with overall cost {distance}"
     
 
 

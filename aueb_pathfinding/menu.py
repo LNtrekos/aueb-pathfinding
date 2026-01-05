@@ -3,8 +3,9 @@ This file contains the menu part of the navigation system
 """
 
 from aueb_pathfinding.classes import Classroom, University
-from aueb_pathfinding.ultils import clean_values
-
+from aueb_pathfinding.ultils import clean_values, distance
+import networkx as nx
+import matplotlib.pyplot as plt
 
 # ==============================================================
 #                  User Input Functions
@@ -72,41 +73,52 @@ def user_input_float(input_prompt, check_prompt, error_prompt,
             print(error_prompt)
 
 
-def user_input_character(input_prompt):
-    '''
-    Handles string input where:
-    - Blank inputs are rejected
-    - User must confirm the entered value
-    - Ensures non-empty, user-approved text input
+def get_user_node(uni, type_node = ""):
 
-    Returns:
-        A validated, confirmed string.
-    '''
+    """
+    Allow the user to select starting and target node, 
+    to apply djikstra algorithm to
+    """
+    if uni == None:
+        print("No University is yet created! Load one first.")
+        return
+    
+    list_len = len(uni.nodes)
+
     while True:
-        # Remove surrounding spaces; ensure non-blank
-        user_input = input(input_prompt).strip()
 
-        if user_input == "":
-            print("Wrong Input. Blank space is not allowed.")
-            continue
+        print("\n-----------------------------")
+        print("       Classrooms List         ")
+        print("-----------------------------\n")
 
-        # Confirmation loop
-        while True:
-            confirm = input(f"You entered '{user_input}'. Proceed? [Y]/n: ").strip().lower()
+        # Display classrooms list
+        counter = 1
+        for node in uni.nodes:
+            print(f"{counter}. {node.name}")
+            counter += 1
+        print(f"{counter}. Exit\n")
 
-            # Accept input on Enter or 'y'
-            if confirm == "" or confirm == "y":
-                print("\n")
-                return user_input
+        # User selects species to update
+        user_input = user_choice(
+        input_prompt = f"Please enter the number (from 1 to {list_len}) of the {type_node} node (or {list_len + 1 } to exit): ",
+        check_prompt = f"Please choose an integer from 1 to {list_len + 1}",
+        error_prompt = f"Wrong Input. Please choose an integer from 1 to {list_len + 1}",
+        lower_limit = 1, upper_limit = list_len + 1
+        )
 
-            # Restart input if 'n'
-            elif confirm == "n":
-                print("Okay, let's try again.\n")
-                break
+        # Handle exit
+        if user_input == (list_len + 1):
+            print("Returning to main menu.")
+            return
+        
+        # Convert to index
+        user_input = user_input - 1 # python's indexing
+        chosen_node = uni.nodes[user_input]
 
-            # Handle invalid confirmation inputs
-            else:
-                print("Invalid choice. Please type 'Y' or 'n'.")
+        return chosen_node
+
+
+
 
 # ==============================================================
 #                     MENU layout
@@ -206,6 +218,64 @@ def create_graph(txt_map = None):
     print("                 AUEB Graph          ")
     print("       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     print(f"\nAueb Graph with maximum distance {uni.max_distance} and {uni.floor_weight} floor weight created!\n")
-    return uni
+    return uni 
 
+# ==============================================================
+#                     Vizualize Graph
+# ==============================================================
 
+def visualize_graph(classrooms, max_distance = 21.0, floor_weight=1.5):
+
+    # Initialise nx object
+    uniGraph = nx.Graph()
+
+    # Add each node
+    for node in classrooms:
+        uniGraph.add_node(node.name, pos=(node.x, node.y))
+
+    # Add the edges without duplicates 
+    for i in range(len(classrooms)):
+        for j in range(i + 1, len(classrooms)):
+
+            u, v = classrooms[i], classrooms[j]
+            dist = distance(u, v, floor_weight)
+            if dist <= max_distance:
+                uniGraph.add_edge(u.name, v.name, weight=round(dist))
+
+    pos = nx.get_node_attributes(uniGraph, 'pos')
+
+    # Find the min and max x and y values to set the axis limits
+    x_vals = [coord[0] for coord in pos.values()]
+    y_vals = [coord[1] for coord in pos.values()]
+
+    # Set the axis limits based on the min and max values of the coordinates
+    x_min, x_max = min(x_vals) - 10, max(x_vals) + 10  # Add some padding
+    y_min, y_max = min(y_vals) - 10, max(y_vals) + 10  # Add some padding
+
+    # Create a plot to visualize the graph
+    fig = plt.figure(figsize=(10, 10))
+
+    # Draw the graph with the adjusted position layout
+    nx.draw(uniGraph, pos, with_labels=True, node_size=1500, node_color='lightblue', font_size=12, font_weight='bold', edge_color='gray')
+
+    # Optionally, display edge weights (Euclidean distances) on the graph
+    edge_labels = nx.get_edge_attributes(uniGraph, 'weight')
+    nx.draw_networkx_edge_labels(uniGraph, pos=pos, edge_labels=edge_labels)
+
+    # Adjust the axis to fit the nodes nicely
+    plt.xlim(x_min, x_max)
+    plt.ylim(y_min, y_max)
+
+    # Add title and show the plot
+    plt.title("Aueb Classrooms Graph")
+
+    return fig
+
+# ==============================================================
+#                     Shortest Path
+# ==============================================================
+
+def print_shortest_path(shortest_path, distance):
+
+    path = " -> ".join(str(node) for node in shortest_path)
+    return f"Shortest Path: {path} with overall cost {distance}"
