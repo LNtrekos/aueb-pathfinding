@@ -1,5 +1,14 @@
 """
-This file contains the menu part of the navigation system
+This file implements the menu system and user interaction layer
+of the indoor navigation application.
+
+It handles:
+- Displaying menu options
+- Validating user input
+- Loading the map data
+- Creating the university graph
+- Visualizing the graph
+- Initiating shortest path computations
 """
 
 from aueb_pathfinding.classes import Classroom, University
@@ -19,6 +28,7 @@ visualize or find shortest path
 """
 
 def map_init_check(uni_map):
+    
     """
     Docstring for map_init_check
     
@@ -28,6 +38,7 @@ def map_init_check(uni_map):
     :Returns: bool
         True if map is loaded, False otherwise.
     """
+    
     if uni_map is None:
         print(
             "\nMap is not loaded yet. Please load a map first.\n"
@@ -38,6 +49,7 @@ def map_init_check(uni_map):
 
 
 def uni_init_check(uni):
+    
     """
     Docstring for uni_init_check
     
@@ -47,12 +59,14 @@ def uni_init_check(uni):
     :Returns: bool
         True if uni is created, False otherwise.
     """
+    
     if uni is None:
         print(
             "\nMap is not loaded yet. Please load a map first.\n"
             "Hint: Go to option 2) Create Graph ;)."
         )
         return False
+    
     return True
 
 
@@ -60,24 +74,30 @@ def uni_init_check(uni):
 # ==============================================================
 #                  User Input Functions
 # ==============================================================
-
 def user_choice(input_prompt, check_prompt, error_prompt, lower_limit, upper_limit):
-    '''
-    Handles integer input from the user with:
-    - Type validation
-    - Lower/upper bound checks
-    - Custom prompts for incorrect entries
+    
+    """
+    Handle integer input from the user with validation.
 
-    Parameters:
-        input_prompt : Main message shown to the user.
-        check_prompt : Message shown when the value is outside limits.
-        error_prompt : Message shown when the input is not an integer.
-        lower_limit  : Minimum acceptable value (default: -inf).
-        upper_limit  : Maximum acceptable value (default: +inf).
+    This function ensures that the user input:
+    - Is an integer
+    - Lies within the specified lower and upper limits
 
-    Returns:
+    :param input_prompt: str
+        Main message shown to the user.
+    :param check_prompt: str
+        Message shown when the value is outside the allowed range.
+    :param error_prompt: str
+        Message shown when the input is not an integer.
+    :param lower_limit: int
+        Minimum acceptable value.
+    :param upper_limit: int
+        Maximum acceptable value.
+
+    :Returns: int
         Validated integer input from the user.
-    '''
+    """
+
     while True:
         try:
             # Attempt to convert user input to integer
@@ -91,19 +111,34 @@ def user_choice(input_prompt, check_prompt, error_prompt, lower_limit, upper_lim
             return user_input
 
         except ValueError:
-            # Triggered when int conversion fails
+            # Triggered when integer conversion fails
             print(error_prompt)
 
 
 def user_input_float(input_prompt, check_prompt, error_prompt, lower_limit=-float('inf'), upper_limit=float('inf')):
-    '''
-    Handles floating-point input with:
-    - Type validation
-    - Lower/upper bound checks
-    - Custom prompts for invalid numerical entries
+    
+    """
+    Handle floating-point input from the user with validation.
 
-    Parameters mirror those of user_input_int() but for float inputs.
-    '''
+    This function ensures that the user input:
+    - Is a valid floating-point number
+    - Lies within the specified bounds
+
+    :param input_prompt: str
+        Main message shown to the user.
+    :param check_prompt: str
+        Message shown when the value is outside the allowed range.
+    :param error_prompt: str
+        Message shown when the input is not a valid float.
+    :param lower_limit: float
+        Minimum acceptable value.
+    :param upper_limit: float
+        Maximum acceptable value.
+
+    :Returns: float
+        Validated floating-point input from the user.
+    """
+    
     while True:
         try:
             # Attempt to convert user input to float
@@ -117,54 +152,63 @@ def user_input_float(input_prompt, check_prompt, error_prompt, lower_limit=-floa
             return user_input
 
         except ValueError:
-            # For invalid float entries
+            # Triggered when float conversion fails
             print(error_prompt)
 
 
 def get_user_node(uni, type_node):
 
     """
-    Allow the user to select starting and target node, 
-    to apply djikstra algorithm to
+    Allow the user to select a classroom from the university graph.
+
+    This function is used to select either the starting or target
+    classroom for the shortest path computation.
+
+    :param uni: University
+        University graph containing classroom nodes.
+    :param type_node: str
+        Description of the node type ("starting" or "target").
+
+    :Returns: Classroom or None
+        Selected classroom, or None if the user chooses to exit.
     """
-    if uni == None:
-        print("No University is yet created! Load one first.")
-        return
-    
+
+    if uni is None:
+        print("No University has been created yet! Load one first.")
+        return None
+
     list_len = len(uni.nodes)
 
     while True:
 
         print("\n-----------------------------")
-        print("       Classrooms List         ")
+        print("       Classrooms List       ")
         print("-----------------------------\n")
 
-        # Display classrooms list
-        counter = 1
-        for node in uni.nodes:
-            print(f"{counter}. {node.name}")
-            counter += 1
-        print(f"{counter}. Exit\n")
+        # Display available classrooms
+        for idx, node in enumerate(uni.nodes, start=1):
+            print(f"{idx}. {node.name}")
+        print(f"{list_len + 1}. Exit\n")
 
-        # User selects species to update
+        # User selects classroom
         user_input = user_choice(
-        input_prompt = f"Please enter the number (from 1 to {list_len}) of the {type_node} node (or {list_len + 1 } to exit): ",
-        check_prompt = f"Please choose an integer from 1 to {list_len + 1}",
-        error_prompt = f"Wrong Input. Please choose an integer from 1 to {list_len + 1}",
-        lower_limit = 1, upper_limit = list_len + 1
+            input_prompt=(
+                f"Please enter the number (from 1 to {list_len}) of the "
+                f"{type_node} node (or {list_len + 1} to exit): "
+            ),
+            check_prompt=f"Please choose an integer from 1 to {list_len + 1}.",
+            error_prompt=f"Wrong input. Please choose an integer from 1 to {list_len + 1}.",
+            lower_limit=1,
+            upper_limit=list_len + 1
         )
 
-        # Handle exit
-        if user_input == (list_len + 1):
+        # Handle exit option
+        if user_input == list_len + 1:
             print("\nReturning to main menu.")
-            return
-        
-        # Convert to index
-        user_input = user_input - 1 # python's indexing
-        chosen_node = uni.nodes[user_input]
+            return None
 
-        return chosen_node
-
+        # Convert to Python list index and return selected node
+        return uni.nodes[user_input - 1]
 
 
 # ==============================================================
@@ -172,10 +216,12 @@ def get_user_node(uni, type_node):
 # ==============================================================
 
 def menu():
+
     """
     Display the main menu and return the user's selection.
     Valid options: 1–5
     """
+    
     print("""
     =========================
             MENU
@@ -205,20 +251,30 @@ def menu():
 def load_map(txt_file="aueb_map.txt"):
 
     """
-    Docstring for load_map
-    
-    :param txt_file: Description
+    Load classroom data from a text file.
+
+    The file is expected to contain one classroom per line,
+    with values separated by semicolons in the following order:
+    classroom_name; x; y; floor
+
+    :param txt_file: str
+        Path to the map text file.
+
+    :Returns: dict
+        Dictionary containing classroom names, coordinates,
+        and floor levels.
     """
-    # Load classroom coordinates and floor info from text file
+
+    # Initialize storage for classroom information
     uni_map = {"classroom": [], "x": [], "y": [], "floor": []}
 
-    # Open the txt file
+    # Open and read the text file
     with open(txt_file, "r") as file:
         for row in file:
-            # Seprate each value by ; and clean and turn to int/str
+            # Separate values by ';' and clean each entry
             parts = [clean_values(v) for v in row.strip().split(";")]
 
-            # Assign each value to the corresponding category 
+            # Assign values to the corresponding categories
             uni_map["classroom"].append(parts[0])
             uni_map["x"].append(parts[1])
             uni_map["y"].append(parts[2])
@@ -233,10 +289,22 @@ def load_map(txt_file="aueb_map.txt"):
 # ==============================================================
 
 def create_graph(uni_map = None):
+
     """
-    Prompt the user for max_distance,
-    create a suitable graph, and return it.
+    Create the university graph from the loaded map.
+
+    This function:
+    - Prompts the user for graph parameters
+    - Creates a University object
+    - Adds classroom nodes and weighted edges
+
+    :param uni_map: dict or None
+        Dictionary containing classroom data loaded from the map file.
+
+    :Returns: University or None
+        Constructed university graph, or None if the map is not loaded.
     """
+
     if uni_map is None:
         print("Map is not yet loaded, please load map first.\n")
         return
@@ -284,7 +352,24 @@ def create_graph(uni_map = None):
 #                     Vizualize Graph
 # ==============================================================
 
-def visualize_graph(classrooms, max_distance = 21.0, floor_weight=1.5):
+def visualize_graph(classrooms, max_distance=21.0, floor_weight=1.0):
+
+    """
+    Visualize the university graph using NetworkX and Matplotlib.
+
+    This function creates a graphical representation of the classrooms
+    and their connections based on the given distance constraints.
+
+    :param classrooms: list[Classroom]
+        List of classroom nodes to be visualized.
+    :param max_distance: float
+        Maximum allowed distance between two classrooms to draw an edge.
+    :param floor_weight: float
+        Weight applied to floor differences when computing distances.
+
+    :Returns: matplotlib.figure.Figure
+        Figure object containing the rendered graph.
+    """
 
     # Initialise nx object
     uniGraph = nx.Graph()
@@ -339,5 +424,18 @@ def visualize_graph(classrooms, max_distance = 21.0, floor_weight=1.5):
 
 def print_shortest_path(shortest_path, distance):
 
+    """
+    Format the shortest path result as a readable string.
+
+    :param shortest_path: list[Classroom]
+        List of classrooms representing the shortest path.
+    :param distance: float
+        Total cost of the shortest path.
+
+    :Returns: str
+        Formatted string describing the path and its total cost.
+    """
+
     path = " -> ".join(str(node) for node in shortest_path)
+
     return f"Shortest Path: {path} with overall cost {distance}"

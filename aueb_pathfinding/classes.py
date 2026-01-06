@@ -1,11 +1,22 @@
 """
-This file contains the classes we used: 
-Classroom, University
+This file contains the core classes used in the project:
+- Classroom
+- University
+
+These classes model the university map as a graph structure,
+where classrooms are nodes and walkable paths are edges.
 """
 
-from aueb_pathfinding.ultils import distance # inside University (for edges) 
+from aueb_pathfinding.ultils import distance  # Used inside University for edge weights
 
 class Classroom:
+
+    """
+    Classroom object representing a single room in the university.
+
+    Each classroom is defined by its name, spatial coordinates,
+    and floor level.
+    """
 
     # Initialization
     def __init__(self, name, x, y, floor):
@@ -51,6 +62,13 @@ class Classroom:
 
 class University: 
 
+    """
+    University graph structure.
+
+    This class stores classrooms as nodes and walking distances
+    between them as edges, forming an undirected weighted graph.
+    """
+
     # Initialization
     def __init__(self, nodes=None, edges=None, max_distance=21.0, floor_weight = 1.5):
 
@@ -81,6 +99,13 @@ class University:
         
     # Nodes
     def add_node(self, node):
+        
+        """
+        Add a Classroom node to the university graph.
+
+        :param node: Classroom
+            Classroom object to be added.
+        """
 
         # Basic validation
         if isinstance(node, Classroom):
@@ -90,6 +115,13 @@ class University:
 
     # Edges
     def add_edge(self, node1, node2):
+
+        """
+        Create an undirected edge between two classrooms.
+
+        The edge weight is calculated using the distance function
+        and is only added if it does not exceed the maximum distance.
+        """
         
         # Check if nodes are the same (eq from classroom object)
         if node1 == node2:
@@ -111,12 +143,22 @@ class University:
         if node2 not in self.edges:
             self.edges[node2] = {}
 
-        # Add both "directions" (A21 -> A22, A22 -> A21), though the graph is undirected
+        # Add both "directions" (A21 -> A22, A22 -> A21), the graph is undirected
         self.edges[node1][node2] = round(dist, 2)
         self.edges[node2][node1] = round(dist, 2)
 
     # Neighbors
     def get_neighbors(self, node):
+
+        """
+        Retrieve neighboring classrooms of a given node.
+
+        :param node: Classroom
+            Classroom whose neighbors are requested.
+
+        :Returns: list[Classroom]
+            List of neighboring classrooms.
+        """
         
         if node not in self.edges:
             return []
