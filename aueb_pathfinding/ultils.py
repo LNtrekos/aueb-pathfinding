@@ -2,8 +2,8 @@
 Helper functions for the indoor navigation system.
 
 This file contains utility functions used across the project,
-including data cleaning, distance calculation, and shortest
-path computation.
+including data cleaning, distance calculation, and the implemetation
+of Dijsktra algorithm for the shortest path computation.
 """
 
 import re
@@ -11,7 +11,7 @@ import math
 
 
 # ==============================================================
-#                   Data Cleaning Functions
+#                   Data Cleaning Function
 # ==============================================================
 
 def clean_values(value, special_symbols=r"[@#!$\*]"):

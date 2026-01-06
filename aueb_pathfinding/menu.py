@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 # ==============================================================
 
 """
-Funtions to ensure the smooth user journey, first has to:
+Funtions to ensure a smooth user journey, first has to:
 load map -> create graph and then:
 visualize or find shortest path
 """
@@ -74,6 +74,7 @@ def uni_init_check(uni):
 # ==============================================================
 #                  User Input Functions
 # ==============================================================
+
 def user_choice(input_prompt, check_prompt, error_prompt, lower_limit, upper_limit):
     
     """
